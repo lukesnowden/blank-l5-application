@@ -1,0 +1,78 @@
+<?php namespace {%NAMESPACE%}\Controllers;
+
+use App\Http\Controllers\Controller;
+use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
+use {%NAMESPACE%}\Requests\{%REQUEST%};
+use Session, Redirect;
+
+class {%CONTROLLER%} extends Controller {
+
+	/**
+	 * [__construct description]
+	 * @param [type] $repository [description]
+	 */
+	public function __construct( {%INTERFACE%} $repository ) {
+		$this->repository = $repository;
+	}
+
+	/**
+	 * [list description]
+	 * @return [type] [description]
+	 */
+	public function lists() {
+		$items = $this->repository->paginate(20);
+		return $this->repository->view( 'lists', array( 'items' => $items ) );
+	}
+
+	/**
+	 * [showEdit description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function showEdit($id) {
+		$model = $this->repository->find($id);
+		return $this->repository->view( 'edit', array( 'model' => $model ) );
+	}
+
+	/**
+	 * [processEdit description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function processEdit( {%REQUEST%} $request, $id) {
+		$model = $this->repository->find($id);
+		$this->repository->update( $model->id, $request->all() );
+		$this->repository->success('Successfully update!');
+		return Redirect::back();
+	}
+
+	/**
+	 * [showAdd description]
+	 * @return [type] [description]
+	 */
+	public function showAdd() {
+		return $this->repository->view( 'add' );
+	}
+
+	/**
+	 * [processAdd description]
+	 * @return [type] [description]
+	 */
+	public function processAdd( {%REQUEST%} $request ) {
+		$item = $this->repository->create( $request->all() );
+		$this->repository->success('Successfully created!');
+		return Redirect::back();
+	}
+
+	/**
+	 * [delete description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function delete($id) {
+		$this->repository->find($id)->delete();
+		$this->repository->success('Successfully deleted!');
+		return Redirect::back();
+	}
+
+}
